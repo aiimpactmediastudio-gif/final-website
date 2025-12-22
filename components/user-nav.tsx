@@ -19,10 +19,11 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
+import { User as SupabaseUser } from "@supabase/supabase-js"
 import { User, CreditCard, Settings, LogOut, Film, Sparkles, LayoutDashboard } from "lucide-react"
 
 interface UserNavProps {
-    user: any | null;
+    user: SupabaseUser | null;
 }
 
 export function UserNav({ user }: UserNavProps) {

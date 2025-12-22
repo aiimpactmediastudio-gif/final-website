@@ -9,7 +9,7 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({ name }) => (
         <h1 style={{ color: '#E50914' }}>Welcome to AI IMPACT MEDIA!</h1>
         <p>Hi {name},</p>
         <p>
-            We are thrilled to have you on board. AI IMPACT MEDIA is revolutionizing the way casting and media production happen, and we're glad you're part of this journey.
+            We are thrilled to have you on board. AI IMPACT MEDIA is revolutionizing the way casting and media production happen, and we&apos;re glad you&apos;re part of this journey.
         </p>
         <p>
             Explore our platform, discover new opportunities, and let our AI tools help you shine.

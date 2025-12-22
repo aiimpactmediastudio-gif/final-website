@@ -77,7 +77,7 @@ export default function AdminDashboard() {
                             {/* Mock Activity Feed */}
                             <div className="flex items-center">
                                 <div className="ml-4 space-y-1">
-                                    <p className="text-sm font-medium leading-none">Olivia Martin submitted for "The Matrix Reborn"</p>
+                                    <p className="text-sm font-medium leading-none">Olivia Martin submitted for &quot;The Matrix Reborn&quot;</p>
                                     <p className="text-sm text-muted-foreground">2 minutes ago</p>
                                 </div>
                                 <div className="ml-auto font-medium">Pending</div>
