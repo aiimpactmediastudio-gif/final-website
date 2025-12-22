@@ -8,7 +8,8 @@ import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { CheckCircle, Eye, EyeOff } from "lucide-react"
+import { CheckCircle, Eye, EyeOff } from "lucide-react";
+import ThankYouMessage from '@/components/ThankYouMessage';
 
 export default function LoginPage() {
     return (
@@ -95,10 +96,7 @@ function LoginContent() {
                     </div>
 
                     {checkEmail && (
-                        <div className="flex items-center gap-2 rounded-md bg-green-500/10 p-4 text-green-500 border border-green-500/20">
-                            <CheckCircle className="h-5 w-5" />
-                            <p className="text-sm font-medium">Check your email to confirm your account.</p>
-                        </div>
+                        <ThankYouMessage />
                     )}
 
                     <div className="grid gap-6">
