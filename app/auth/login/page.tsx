@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { createClient } from "@/lib/supabase/client"
 
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,14 @@ import { Label } from "@/components/ui/label"
 import { CheckCircle, Eye, EyeOff } from "lucide-react"
 
 export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="h-screen w-full flex items-center justify-center bg-black text-white">Loading...</div>}>
+            <LoginContent />
+        </Suspense>
+    )
+}
+
+function LoginContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const checkEmail = searchParams.get("checkEmail")
