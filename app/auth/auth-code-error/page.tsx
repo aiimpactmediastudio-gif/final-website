@@ -14,7 +14,7 @@ export default function AuthCodeError() {
                 <div className="space-y-2">
                     <h1 className="text-2xl font-black tracking-tighter text-white">Authentication Error</h1>
                     <p className="text-sm text-gray-400">
-                        We couldn't verify your session. This link may have expired or is no longer valid.
+                        We couldn&apos;t verify your session. This link may have expired or is no longer valid.
                     </p>
                 </div>
                 <div className="flex flex-col gap-2">
