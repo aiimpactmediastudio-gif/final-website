@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
-import { Bell, Lock, Sparkles, Brain } from "lucide-react"
+import { Sidebar, Play, Mic, Bell, Lock, Sparkles, Brain } from "lucide-react"
 
 export default function SettingsPage() {
     return (

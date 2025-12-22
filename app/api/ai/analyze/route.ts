@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { submissionId } = body;
+        const { submissionId, fileUrl } = body;
 
         // Simulate AI Processing Delay
         await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
                 timestamp: new Date().toISOString()
             }
         });
-    } catch {
+    } catch (error) {
         return NextResponse.json({ success: false, error: "AI Processing Failed" }, { status: 500 });
     }
 }

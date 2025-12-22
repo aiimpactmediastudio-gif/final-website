@@ -3,9 +3,10 @@
 import { useState, useRef } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
-import { Upload, CheckCircle } from "lucide-react"
+import { Upload, X, CheckCircle } from "lucide-react"
 
 export function CastingForm() {
     const [headshot, setHeadshot] = useState<File | null>(null)
@@ -80,8 +81,8 @@ export function CastingForm() {
             clearInterval(simulateProgress)
             setUploadProgress(100)
             setIsSuccess(true)
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "An error occurred during submission.")
+        } catch (err: any) {
+            setError(err.message || "An error occurred during submission.")
         } finally {
             setIsUploading(false)
         }
@@ -95,7 +96,7 @@ export function CastingForm() {
                 </div>
                 <h2 className="text-2xl font-bold">Submission Received</h2>
                 <p className="text-muted-foreground">
-                    Your profile has been sent to our AI casting engine. We will contact you if there&apos;s a match.
+                    Your profile has been sent to our AI casting engine. We will contact you if there's a match.
                 </p>
                 <Button onClick={() => window.location.reload()} variant="outline">
                     Submit Another
@@ -117,7 +118,6 @@ export function CastingForm() {
                     >
                         {headshot ? (
                             <div className="relative group">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src={URL.createObjectURL(headshot)}
                                     alt="Headshot preview"

@@ -23,7 +23,7 @@ export function Hero() {
                         <span className="text-red-600">MEDIA</span>
                     </h1>
                     <p className="text-lg text-gray-200 sm:text-xl font-medium drop-shadow-md max-w-xl">
-                        The world&apos;s first AI-driven casting and media platform. Revolutionizing the industry with brutal efficiency and cinematic excellence.
+                        The world's first AI-driven casting and media platform. Revolutionizing the industry with brutal efficiency and cinematic excellence.
                     </p>
                     <div className="flex items-center gap-4 pt-4">
                         <Button size="lg" className="h-12 px-8 text-base bg-white text-black hover:bg-gray-200 font-bold transition-all">

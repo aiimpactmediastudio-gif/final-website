@@ -1,7 +1,7 @@
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Camera, Film, Award, TrendingUp, Activity } from "lucide-react"
+import { Camera, Film, Award, TrendingUp, Activity, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
@@ -37,7 +37,7 @@ export default function ProfilePage() {
                                 </div>
 
                                 <div>
-                                    <h1 className="text-2xl font-bold text-white">James &quot;Vito&quot; Doe</h1>
+                                    <h1 className="text-2xl font-bold text-white">James "Vito" Doe</h1>
                                     <p className="text-red-500 font-medium">Lead Actor • Screenwriter</p>
                                 </div>
 
@@ -125,7 +125,7 @@ export default function ProfilePage() {
                                                 <TrendingUp className="h-5 w-5 text-gray-400" />
                                             </div>
                                             <div>
-                                                <h4 className="text-sm font-medium text-white">Application Sent for &quot;The Dark Horizon&quot;</h4>
+                                                <h4 className="text-sm font-medium text-white">Application Sent for "The Dark Horizon"</h4>
                                                 <p className="text-xs text-gray-400 mt-1">Your audition tape was submitted successfully. The casting director has been notified.</p>
                                                 <span className="text-[10px] text-gray-500 mt-2 block">2 hours ago</span>
                                             </div>

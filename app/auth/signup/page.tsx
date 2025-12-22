@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
+import { Progress } from "@/components/ui/progress"
 import { Eye, EyeOff } from "lucide-react"
 import { sendWelcomeEmail } from "@/app/actions/email"
 
@@ -41,7 +41,12 @@ export default function SignupPage() {
         return "bg-green-500"
     }, [strength])
 
-
+    const strengthText = useMemo(() => {
+        if (password.length === 0) return ""
+        if (strength < 40) return "Weak"
+        if (strength < 80) return "Medium"
+        return "Strong"
+    }, [strength, password])
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault()
