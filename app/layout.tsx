@@ -5,6 +5,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { ToastProvider } from "@/app/providers/toast-provider";
+import { LoadingProvider } from "@/app/providers/loading-provider";
+import PageTransition from "@/components/ui/page-transition";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -32,9 +35,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SiteHeader />
-          <div className="flex-1">{children}</div>
-          <SiteFooter />
+          <LoadingProvider>
+            <ToastProvider>
+              <SiteHeader />
+              <PageTransition>{children}</PageTransition>
+              <SiteFooter />
+            </ToastProvider>
+          </LoadingProvider>
         </ThemeProvider>
       </body>
     </html>

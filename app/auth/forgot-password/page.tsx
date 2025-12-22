@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useEffect } from "react"
 import { useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
@@ -13,9 +14,11 @@ export default function ForgotPasswordPage() {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
+    const [cooldown, setCooldown] = useState(0)
 
     const handleReset = async (e: React.FormEvent) => {
         e.preventDefault()
+        if (cooldown) return
         setIsLoading(true)
         setError(null)
         const supabase = createClient()
@@ -29,6 +32,7 @@ export default function ForgotPasswordPage() {
         } else {
             setSuccess(true)
             setIsLoading(false)
+            setCooldown(60) // 60‑second cooldown
         }
     }
 
@@ -95,7 +99,12 @@ export default function ForgotPasswordPage() {
                                         {error}
                                     </p>
                                 )}
-                                <Button disabled={isLoading}>
+                                {cooldown > 0 && (
+                                    <p className="text-sm text-muted-foreground">
+                                        Please wait {cooldown}s before trying again.
+                                    </p>
+                                )}
+                                <Button disabled={isLoading || cooldown > 0}>
                                     {isLoading && (
                                         <svg
                                             className="mr-2 h-4 w-4 animate-spin"
@@ -112,7 +121,7 @@ export default function ForgotPasswordPage() {
                                             <path d="M21 12a9 9 0 1 1-6.219-8.56" />
                                         </svg>
                                     )}
-                                    Send Recovery Link
+                                    {cooldown > 0 ? `Retry in ${cooldown}s` : 'Send Recovery Link'}
                                 </Button>
                             </div>
                         </form>

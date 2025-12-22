@@ -1,5 +1,6 @@
 import { MainNav } from "@/components/main-nav"
 import { UserNav } from "@/components/user-nav"
+import { ModeToggle } from "@/components/mode-toggle"
 import { createClient } from "@/lib/supabase/server" // Server Component
 
 export async function SiteHeader() {
@@ -13,6 +14,7 @@ export async function SiteHeader() {
             <div className="container flex h-14 max-w-screen-2xl items-center">
                 <MainNav />
                 <div className="flex flex-1 items-center justify-end space-x-2">
+                    <ModeToggle />
                     <UserNav user={user} />
                 </div>
             </div>

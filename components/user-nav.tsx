@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
 import { User, CreditCard, Settings, LogOut, Film, Sparkles, LayoutDashboard } from "lucide-react"
+import { motion } from "framer-motion"
 
 interface UserNavProps {
     user: any | null;
@@ -63,12 +64,18 @@ export function UserNav({ user }: UserNavProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full border border-white/10 hover:border-red-500/50 transition-colors">
-                    <Avatar className="h-10 w-10">
-                        <AvatarImage src="/avatars/01.png" alt="@user" />
-                        <AvatarFallback className="bg-zinc-800 text-white font-bold">{displayName.charAt(0).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-500 rounded-full border-2 border-black" />
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full border border-white/10 hover:border-red-500/50 transition-colors group">
+                    <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="h-full w-full"
+                    >
+                        <Avatar className="h-10 w-10">
+                            <AvatarImage src="/avatars/01.png" alt="@user" />
+                            <AvatarFallback className="bg-zinc-800 text-white font-bold">{displayName.charAt(0).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-500 rounded-full border-2 border-black group-hover:scale-110 transition-transform" />
+                    </motion.div>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-64 bg-black/95 border-white/10 backdrop-blur-xl text-white p-2" align="end" forceMount>
@@ -95,24 +102,30 @@ export function UserNav({ user }: UserNavProps) {
 
                 <DropdownMenuGroup>
                     <Link href="/profile">
-                        <DropdownMenuItem className="cursor-pointer focus:bg-white/10 focus:text-white">
-                            <User className="mr-2 h-4 w-4" />
-                            <span>Profile</span>
-                            <DropdownMenuShortcut className="text-gray-500">⇧⌘P</DropdownMenuShortcut>
+                        <DropdownMenuItem className="cursor-pointer focus:bg-white/10 focus:text-white transition-all duration-200 group">
+                            <motion.div className="flex items-center w-full" whileHover={{ x: 5 }}>
+                                <User className="mr-2 h-4 w-4 group-hover:text-red-500 transition-colors" />
+                                <span>Profile</span>
+                                <DropdownMenuShortcut className="text-gray-500">⇧⌘P</DropdownMenuShortcut>
+                            </motion.div>
                         </DropdownMenuItem>
                     </Link>
                     <Link href="/billing">
-                        <DropdownMenuItem className="cursor-pointer focus:bg-white/10 focus:text-white">
-                            <CreditCard className="mr-2 h-4 w-4" />
-                            <span>Billing</span>
-                            <DropdownMenuShortcut className="text-gray-500">⌘B</DropdownMenuShortcut>
+                        <DropdownMenuItem className="cursor-pointer focus:bg-white/10 focus:text-white transition-all duration-200 group">
+                            <motion.div className="flex items-center w-full" whileHover={{ x: 5 }}>
+                                <CreditCard className="mr-2 h-4 w-4 group-hover:text-red-500 transition-colors" />
+                                <span>Billing</span>
+                                <DropdownMenuShortcut className="text-gray-500">⌘B</DropdownMenuShortcut>
+                            </motion.div>
                         </DropdownMenuItem>
                     </Link>
                     <Link href="/settings">
-                        <DropdownMenuItem className="cursor-pointer focus:bg-white/10 focus:text-white">
-                            <Settings className="mr-2 h-4 w-4" />
-                            <span>Settings</span>
-                            <DropdownMenuShortcut className="text-gray-500">⌘S</DropdownMenuShortcut>
+                        <DropdownMenuItem className="cursor-pointer focus:bg-white/10 focus:text-white transition-all duration-200 group">
+                            <motion.div className="flex items-center w-full" whileHover={{ x: 5 }}>
+                                <Settings className="mr-2 h-4 w-4 group-hover:text-red-500 transition-colors" />
+                                <span>Settings</span>
+                                <DropdownMenuShortcut className="text-gray-500">⌘S</DropdownMenuShortcut>
+                            </motion.div>
                         </DropdownMenuItem>
                     </Link>
                 </DropdownMenuGroup>
