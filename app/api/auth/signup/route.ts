@@ -83,7 +83,8 @@ export async function POST(req: Request) {
 
     } catch (error: any) {
         if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: (error as any).errors[0]?.message || 'Invalid input' }, { status: 400 });
+            // ZodError uses .issues, not .errors
+            return NextResponse.json({ error: error.issues[0]?.message || 'Invalid input' }, { status: 400 });
         }
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
