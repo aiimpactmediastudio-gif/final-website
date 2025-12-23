@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
-export default function ResetPasswordPage() {
+
+function ResetPasswordForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const code = searchParams.get("code");
@@ -61,11 +62,28 @@ export default function ResetPasswordPage() {
         }
         setIsLoading(true);
         setFormError(null);
-        const { error } = await supabase.auth.updateUser({ password });
+        const { error, data } = await supabase.auth.updateUser({ password });
         if (error) {
             setFormError(error.message);
         } else {
-            router.push("/auth/login?checkEmail=true");
+            // Revoke all other sessions for this user
+            const user = data?.user ?? null;
+            if (user?.id) {
+                try {
+                    await fetch('/api/revoke-sessions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: user.id }),
+                    });
+                } catch (e) {
+                    console.error('Failed to revoke sessions', e);
+                }
+            }
+            // Show success toast
+            import('react-hot-toast').then(({ toast }) => {
+                toast.success('Password updated – you can now log in');
+            });
+            router.push('/auth/login?checkEmail=true');
         }
         setIsLoading(false);
     };
@@ -82,7 +100,7 @@ export default function ResetPasswordPage() {
     }
 
     if (!sessionChecked) {
-        return <p className="text-center py-8">Loading…</p>;
+        return <p className="text-center py-8">Loading...</p>;
     }
 
     return (
@@ -126,10 +144,18 @@ export default function ResetPasswordPage() {
                         <p className="text-red-500 text-sm">{formError}</p>
                     )}
                     <Button type="submit" disabled={isLoading} className="w-full">
-                        {isLoading ? "Updating…" : "Update Password"}
+                        {isLoading ? "Updating..." : "Update Password"}
                     </Button>
                 </form>
             </div>
         </div>
+    );
+}
+
+export default function ResetPasswordPage() {
+    return (
+        <Suspense fallback={<p className="text-center py-8">Loading...</p>}>
+            <ResetPasswordForm />
+        </Suspense>
     );
 }
