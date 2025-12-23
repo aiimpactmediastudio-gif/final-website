@@ -45,7 +45,12 @@ export async function requestPasswordReset(email: string) {
 
         if (error) {
             console.error("Supabase Admin Error:", error)
-            return { success: false, error: error.message }
+            // SECURITY: Do not reveal if user does not exist.
+            // If the error indicates "User not found" (or similar), we must still return success.
+            // Supabase admin might return specific errors, so we catch them here.
+            // We'll treat all errors as "success" for the frontend to prevent enumeration,
+            // unless it's a configuration error which we already handled above.
+            return { success: true }
         }
 
         if (!data.properties?.action_link) {
