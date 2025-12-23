@@ -27,6 +27,15 @@ export default function ResetPasswordPage() {
         setIsLoading(true)
         setError(null)
         const supabase = createClient()
+
+        // Ensure session exists
+        const { data: { session } } = await supabase.auth.getSession()
+        if (!session) {
+            setError("Your session has expired or is invalid. Please request a new password reset link.")
+            setIsLoading(false)
+            return
+        }
+
         const { error } = await supabase.auth.updateUser({
             password: password
         })
