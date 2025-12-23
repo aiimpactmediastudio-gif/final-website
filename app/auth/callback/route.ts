@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { supabaseServer } from "@/lib/supabase/client"
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url);
@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const type = searchParams.get('type'); // 'recovery', 'signup', etc.
 
     if (code) {
-        const supabase = await createClient();
+        const supabase = supabaseServer()
         const { error } = await supabase.auth.exchangeCodeForSession(code);
 
         if (!error) {

@@ -1,45 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect } from "react"
-import { useState } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { ArrowLeft, CheckCircle } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
+import { RequestResetForm } from "@/components/auth/RequestResetForm"
 
 export default function ForgotPasswordPage() {
-    const [email, setEmail] = useState("")
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    const [success, setSuccess] = useState(false)
-    const [cooldown, setCooldown] = useState(0)
-
-    const handleReset = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (cooldown) return
-        setIsLoading(true)
-        setError(null)
-
-        // Use Server Action to bypass Supabase SMTP limitations
-        // We import it dynamically to avoid server-action-in-client issues depending on how nextjs is configured, 
-        // but typically importing from top is fine. Let's stick to import at top.
-        // Actually, let's keep it simple.
-
-        const { requestPasswordReset } = await import("@/app/actions/auth")
-        const result = await requestPasswordReset(email)
-
-        if (!result.success) {
-            setError(result.error || "Failed to send reset email")
-            setIsLoading(false)
-        } else {
-            setSuccess(true)
-            setIsLoading(false)
-            setCooldown(60)
-        }
-    }
-
     return (
         <div className="container relative h-screen flex-col items-center justify-center grid lg:max-w-none lg:grid-cols-2 lg:px-0">
             <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
@@ -66,78 +31,13 @@ export default function ForgotPasswordPage() {
                         </p>
                     </div>
 
-                    {success ? (
-                        <div className="space-y-4 text-center animate-in fade-in">
-                            <div className="flex justify-center">
-                                <CheckCircle className="h-12 w-12 text-green-500" />
-                            </div>
-                            <h3 className="font-semibold text-lg">Check your email</h3>
-                            <p className="text-sm text-muted-foreground">
-                                We have sent a password reset link to <span className="font-medium text-foreground">{email}</span>.
-                            </p>
-                            <Button asChild className="w-full" variant="outline">
-                                <Link href="/auth/login">Back to Login</Link>
-                            </Button>
-                        </div>
-                    ) : (
-                        <form onSubmit={handleReset}>
-                            <div className="grid gap-2">
-                                <div className="grid gap-1">
-                                    <Label className="sr-only" htmlFor="email">
-                                        Email
-                                    </Label>
-                                    <Input
-                                        id="email"
-                                        placeholder="name@example.com"
-                                        type="email"
-                                        autoCapitalize="none"
-                                        autoComplete="email"
-                                        autoCorrect="off"
-                                        disabled={isLoading}
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                    />
-                                </div>
-                                {error && (
-                                    <p className="text-sm text-red-600">
-                                        {error}
-                                    </p>
-                                )}
-                                {cooldown > 0 && (
-                                    <p className="text-sm text-muted-foreground">
-                                        Please wait {cooldown}s before trying again.
-                                    </p>
-                                )}
-                                <Button disabled={isLoading || cooldown > 0}>
-                                    {isLoading && (
-                                        <svg
-                                            className="mr-2 h-4 w-4 animate-spin"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="24"
-                                            height="24"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                                        </svg>
-                                    )}
-                                    {cooldown > 0 ? `Retry in ${cooldown}s` : 'Send Recovery Link'}
-                                </Button>
-                            </div>
-                        </form>
-                    )}
+                    <RequestResetForm />
 
-                    {!success && (
-                        <p className="px-8 text-center text-sm text-muted-foreground">
-                            <Link href="/auth/login" className="hover:text-brand underline underline-offset-4">
-                                Remember your password? Login
-                            </Link>
-                        </p>
-                    )}
+                    <p className="px-8 text-center text-sm text-muted-foreground">
+                        <Link href="/auth/login" className="hover:text-brand underline underline-offset-4">
+                            Remember your password? Login
+                        </Link>
+                    </p>
                 </div>
             </div>
         </div>

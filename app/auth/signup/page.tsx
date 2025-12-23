@@ -3,13 +3,14 @@
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState, useMemo, Suspense } from "react"
-import { createClient } from "@/lib/supabase/client"
+import { supabaseBrowser } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { Eye, EyeOff } from "lucide-react"
 import { sendWelcomeEmail } from "@/app/actions/email"
+import zxcvbn from 'zxcvbn';
 
 export default function SignupPage() {
     return (
@@ -41,18 +42,14 @@ function SignupContent() {
 
     // Password Strength Logic
     const strength = useMemo(() => {
-        let score = 0
-        if (password.length > 5) score += 20
-        if (password.length > 8) score += 20
-        if (/[A-Z]/.test(password)) score += 20
-        if (/[0-9]/.test(password)) score += 20
-        if (/[^A-Za-z0-9]/.test(password)) score += 20
-        return score
+        if (!password) return 0;
+        const result = zxcvbn(password);
+        return Math.min(result.score * 25, 100); // Scale 0-4 to 0-100
     }, [password])
 
     const strengthColor = useMemo(() => {
-        if (strength < 40) return "bg-red-500"
-        if (strength < 80) return "bg-yellow-500"
+        if (strength < 50) return "bg-red-500"
+        if (strength < 75) return "bg-yellow-500"
         return "bg-green-500"
     }, [strength])
 
@@ -65,7 +62,7 @@ function SignupContent() {
 
         setIsLoading(true)
         setError(null)
-        const supabase = createClient()
+        const supabase = supabaseBrowser
 
         if (isResetMode) {
             // HANDLE PASSWORD RESET
@@ -76,43 +73,47 @@ function SignupContent() {
                 setIsLoading(false)
             } else {
                 // Send 'Password Changed' confirmation email
-                // We need the user's email. If session is active (which it should be after callback), fetch it.
                 const { data: { user } } = await supabase.auth.getUser()
                 if (user?.email) {
-                    // Fire and forget
                     import('@/app/actions/email').then(mod => mod.sendPasswordChangedEmail(user.email!));
                 }
 
                 router.push("/auth/login?passwordReset=true")
             }
         } else {
-            // HANDLE REGULAR SIGNUP
-            const { error } = await supabase.auth.signUp({
-                email,
-                password,
-                options: {
-                    emailRedirectTo: `${location.origin}/auth/callback`,
-                },
-            })
+            // HANDLE REGULAR SIGNUP via Ruthless API
+            try {
+                const res = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
 
-            if (error) {
-                setError(error.message)
-                setIsLoading(false)
-            } else {
-                try {
-                    await sendWelcomeEmail(email, email.split("@")[0]);
-                } catch (emailError) {
-                    console.error("Failed to send welcome email:", emailError);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    // Start with generic error
+                    let errorMsg = data.error || 'Signup failed';
+                    // If zxcvbn details are present, append them
+                    if (data.details && Array.isArray(data.details) && data.details.length > 0) {
+                        errorMsg += ': ' + data.details.join(' ');
+                    }
+                    throw new Error(errorMsg);
                 }
 
+                // Success
                 router.push("/auth/login?checkEmail=true")
+
+            } catch (err: any) {
+                setError(err.message);
+                setIsLoading(false);
             }
         }
     }
 
     const handleGoogleLogin = async () => {
         setGoogleLoading(true)
-        const supabase = createClient()
+        const supabase = supabaseBrowser
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { createClient } from "@/lib/supabase/client"
+import { supabaseBrowser } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -39,7 +39,7 @@ export function CastingForm() {
         setUploadProgress(0)
 
         try {
-            const supabase = createClient()
+            const supabase = supabaseBrowser
             const { data: { user } } = await supabase.auth.getUser()
 
             if (!user) {

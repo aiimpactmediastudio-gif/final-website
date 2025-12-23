@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
+import { supabaseBrowser } from "@/lib/supabase/client"
 import {
     Avatar,
     AvatarFallback,
@@ -28,7 +28,7 @@ interface UserNavProps {
 
 export function UserNav({ user }: UserNavProps) {
     const router = useRouter()
-    const supabase = createClient()
+    const supabase = supabaseBrowser
 
     const handleLogout = async () => {
         await supabase.auth.signOut()

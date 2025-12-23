@@ -1,10 +1,10 @@
 import { MainNav } from "@/components/main-nav"
 import { UserNav } from "@/components/user-nav"
 import { ModeToggle } from "@/components/mode-toggle"
-import { createClient } from "@/lib/supabase/server" // Server Component
+import { supabaseServer } from "@/lib/supabase/client" // Server Component
 
 export async function SiteHeader() {
-    const supabase = await createClient()
+    const supabase = supabaseServer()
     const {
         data: { user },
     } = await supabase.auth.getUser()

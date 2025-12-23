@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState, Suspense } from "react"
-import { createClient } from "@/lib/supabase/client"
+import { supabaseBrowser } from "@/lib/supabase/client"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,24 +37,43 @@ function LoginContent() {
         e.preventDefault()
         setIsLoading(true)
         setError(null)
-        const supabase = createClient()
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        })
 
-        if (error) {
-            setError(error.message)
-            setIsLoading(false)
-        } else {
-            router.push("/")
-            router.refresh()
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                // Determine if we show the specific error (if generic enough) or fallback
+                // The API returns generic "Invalid login credentials" or "Invalid request format"
+                throw new Error(data.error || 'Login failed');
+            }
+
+            if (data.session) {
+                const supabase = supabaseBrowser;
+                const { error: sessionError } = await supabase.auth.setSession(data.session);
+                if (sessionError) throw sessionError;
+
+                router.push("/");
+                router.refresh();
+            } else {
+                // Should not happen if API is correct, but fallback
+                router.push("/");
+            }
+
+        } catch (err: any) {
+            setError(err.message);
+            setIsLoading(false);
         }
     }
 
     const handleGoogleLogin = async () => {
         setGoogleLoading(true)
-        const supabase = createClient()
+        const supabase = supabaseBrowser
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
