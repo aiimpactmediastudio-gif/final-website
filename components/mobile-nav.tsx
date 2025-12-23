@@ -10,7 +10,7 @@ export function MobileNav() {
     const pathname = usePathname()
 
     return (
-        <div className="fixed bottom-0 left-0 z-50 w-full border-t border-white/10 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60 md:hidden">
+        <div className="fixed bottom-0 left-0 z-[100] w-full border-t border-white/10 bg-black/95 backdrop-blur supports-[backdrop-filter]:bg-black/60 md:hidden">
             <div className="grid h-16 grid-cols-4 items-center justify-items-center">
                 <Link
                     href="/"

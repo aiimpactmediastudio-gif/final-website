@@ -32,8 +32,7 @@ export function UserNav({ user }: UserNavProps) {
 
     const handleLogout = async () => {
         await supabase.auth.signOut()
-        router.replace('/')
-        router.refresh()
+        window.location.href = '/' // Hard redirect to ensure state is cleared
     }
 
     // Dynamic Greeting Logic
