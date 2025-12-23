@@ -9,6 +9,14 @@ export async function GET(request: Request) {
     let next = searchParams.get('next') ?? '/';
     const type = searchParams.get('type');
 
+    console.log("Auth Callback Request:", {
+        url: request.url,
+        code: code ? "*****" : null,
+        next,
+        type,
+        params: Object.fromEntries(searchParams.entries())
+    });
+
     if (code) {
         const supabase = await createClient();
         const { error } = await supabase.auth.exchangeCodeForSession(code);
