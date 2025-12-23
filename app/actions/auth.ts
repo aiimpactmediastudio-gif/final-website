@@ -43,19 +43,15 @@ export async function requestPasswordReset(email: string) {
         console.log(`Generating reset link for site: ${siteUrl}`); // Debug log
 
 
-        // Construct the redirect URL robustly
-        // query params: ?next=/auth/reset-password&type=recovery
-        const redirectUrl = new URL(`${siteUrl}/auth/callback`);
-        redirectUrl.searchParams.set('next', '/auth/reset-password');
-        redirectUrl.searchParams.set('type', 'recovery'); // Explicitly add type for robust handling
-
-        console.log(`Computed redirect URL: ${redirectUrl.toString()}`);
+        // For password recovery we can redirect straight to the reset page
+        const redirectUrl = `${siteUrl}/auth/reset-password`;
+        console.log(`Recovery redirect URL: ${redirectUrl}`);
 
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({
             type: "recovery",
             email,
             options: {
-                redirectTo: redirectUrl.toString(),
+                redirectTo: redirectUrl,
             }
         })
 

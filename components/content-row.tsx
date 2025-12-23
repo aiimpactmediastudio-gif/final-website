@@ -18,7 +18,7 @@ interface ContentRowProps {
     items: ContentItem[]
 }
 
-export function ContentRow({ title, items }: ContentRowProps) {
+export function ContentRow({ title, items = [] }: ContentRowProps) {
     const rowRef = React.useRef<HTMLDivElement>(null)
 
     const scroll = (direction: "left" | "right") => {
