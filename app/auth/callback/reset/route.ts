@@ -18,7 +18,7 @@ export async function GET(request: Request) {
                 // Determine redirect URL based on environment
                 const forwardedHost = request.headers.get('x-forwarded-host');
                 const isLocalEnv = process.env.NODE_ENV === 'development';
-                const next = '/auth/reset-password';
+                const next = '/reset-password';
 
                 if (isLocalEnv) {
                     return NextResponse.redirect(`${origin}${next}`);
