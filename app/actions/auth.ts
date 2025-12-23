@@ -43,8 +43,8 @@ export async function requestPasswordReset(email: string) {
         console.log(`Generating reset link for site: ${siteUrl}`); // Debug log
 
 
-        // For password recovery we can redirect straight to the reset page
-        const redirectUrl = `${siteUrl}/auth/reset-password`;
+        // For password recovery we redirect to the PUBLIC reset page (not /auth/reset-password)
+        const redirectUrl = `${siteUrl}/reset-password`;
         console.log(`Recovery redirect URL: ${redirectUrl}`);
 
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({
