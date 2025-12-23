@@ -1,8 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState, useMemo } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useState, useMemo, Suspense } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,14 @@ import { Eye, EyeOff } from "lucide-react"
 import { sendWelcomeEmail } from "@/app/actions/email"
 
 export default function SignupPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-black text-white">Loading...</div>}>
+            <SignupContent />
+        </Suspense>
+    )
+}
+
+function SignupContent() {
     const router = useRouter()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
