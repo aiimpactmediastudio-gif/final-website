@@ -25,13 +25,21 @@ export async function requestPasswordReset(email: string) {
         )
 
         // 3. Generate Recovery Link
-        // This generates a link like: {site_url}/auth/callback?code=...&type=recovery
-        // We instruct Supabase to redirect the user to our reset-password page after handling the code
+        // Support Vercel deployments automatically by checking NEXT_PUBLIC_VERCEL_URL or VERCEL_URL
+        // The process.env.VERCEL_URL is automatically set by Vercel but doesn't include https://
+        let siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+        if (process.env.VERCEL_URL) {
+            siteUrl = `https://${process.env.VERCEL_URL}`;
+        }
+
+        console.log(`Generating reset link for site: ${siteUrl}`); // Debug log
+
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({
             type: "recovery",
             email,
             options: {
-                redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback?next=/auth/reset-password`,
+                redirectTo: `${siteUrl}/auth/callback?next=/auth/reset-password`,
             }
         })
 
