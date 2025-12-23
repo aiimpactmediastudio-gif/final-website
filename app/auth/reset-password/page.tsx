@@ -14,7 +14,8 @@ export const dynamic = 'force-dynamic';
 function ResetPasswordForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const code = searchParams.get("code");
+    const code = searchParams.get("code") || searchParams.get("token");
+    const email = searchParams.get("email");
     const supabase = createClient();
 
     const [sessionChecked, setSessionChecked] = useState(false);
