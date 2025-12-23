@@ -32,6 +32,7 @@ export function UserNav({ user }: UserNavProps) {
 
     const handleLogout = async () => {
         await supabase.auth.signOut()
+        router.replace('/')
         router.refresh()
     }
 

@@ -9,6 +9,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { ToastProvider } from "@/app/providers/toast-provider";
 import { LoadingProvider } from "@/app/providers/loading-provider";
 import PageTransition from "@/components/ui/page-transition";
+import { MobileNav } from "@/components/mobile-nav";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -46,6 +47,7 @@ export default function RootLayout({
           <LoadingProvider>
             <ToastProvider>
               <SiteHeader />
+              <MobileNav />
               <PageTransition>{children}</PageTransition>
               <SiteFooter />
             </ToastProvider>

@@ -223,4 +223,11 @@ body {
     touch-action: pan-x pan-y;
     /* Default, can be overridden by specific elements */
   }
+
+  /* Defensive image handling */
+  img,
+  svg {
+    max-width: 100%;
+    display: block;
+  }
 }
