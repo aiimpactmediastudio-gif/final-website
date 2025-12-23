@@ -17,6 +17,13 @@ export const metadata: Metadata = {
   description: "The Netflix of AI Casting & Media",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, // Optional: strictly enforces 'app' feel, though impacts accessibility. User request implies strictness.
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{

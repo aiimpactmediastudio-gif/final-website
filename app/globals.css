@@ -62,7 +62,8 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
 
-  --primary: oklch(0.205 0 0); /* Netflix Red-ish */
+  --primary: oklch(0.205 0 0);
+  /* Netflix Red-ish */
   --primary-foreground: oklch(0.985 0 0);
 
   --secondary: oklch(0.97 0 0);
@@ -155,13 +156,16 @@ body {
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--muted-foreground) / 0.5);
   border-radius: 5px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.8);
 }
@@ -203,8 +207,20 @@ body {
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
+    /* Global enforcement */
   }
+
+  html,
   body {
     @apply bg-background text-foreground;
+    width: 100%;
+    overflow-x: hidden;
+    /* Strict no horizontal scroll */
+    position: relative;
+    overscroll-behavior-y: none;
+    /* App-like: prevents bounce/pull-to-refresh on body */
+    touch-action: pan-x pan-y;
+    /* Default, can be overridden by specific elements */
   }
 }

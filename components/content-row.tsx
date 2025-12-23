@@ -50,7 +50,7 @@ export function ContentRow({ title, items = [] }: ContentRowProps) {
                 {/* Scroll Container */}
                 <div
                     ref={rowRef}
-                    className="flex gap-2 overflow-x-hidden scroll-smooth px-4 md:px-12 pb-8"
+                    className="flex gap-2 overflow-x-auto scroll-smooth px-4 md:px-12 pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
                 >
                     {items.map((item) => (
                         <GlassCard key={item.id} item={item} className="w-[200px] md:w-[280px] flex-none cursor-pointer" />
