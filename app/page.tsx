@@ -1,4 +1,4 @@
-import { Hero } from "@/components/Hero"
+import { Hero } from "@/components/hero"
 import { ContentRow } from "@/components/content-row"
 
 export default function Home() {
