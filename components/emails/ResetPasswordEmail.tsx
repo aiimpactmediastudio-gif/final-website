@@ -18,18 +18,21 @@ export const ResetPasswordEmail: React.FC<ResetPasswordEmailProps> = ({ resetLin
             <a
                 href={resetLink}
                 style={{
-                    backgroundColor: '#E50914',
+                    backgroundColor: '#0070f3',
                     color: '#ffffff',
                     padding: '12px 24px',
-                    borderRadius: '4px',
+                    borderRadius: '5px',
                     textDecoration: 'none',
-                    fontWeight: 'bold',
                     display: 'inline-block'
                 }}
             >
                 Reset Password
             </a>
         </div>
+        <p style={{ fontSize: '14px', color: '#666' }}>
+            <strong>THIS IS YOUR DOMAIN LINK:</strong> <br />
+            {resetLink}
+        </p>
 
         <p style={{ fontSize: '14px', color: '#666' }}>
             If you didn't ask to reset your password, you can safely ignore this email.
