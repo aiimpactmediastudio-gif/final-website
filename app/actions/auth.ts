@@ -44,9 +44,10 @@ export async function requestPasswordReset(email: string) {
 
 
         // Construct the redirect URL robustly
-        // query params: ?next=/auth/reset-password
+        // query params: ?next=/auth/reset-password&type=recovery
         const redirectUrl = new URL(`${siteUrl}/auth/callback`);
         redirectUrl.searchParams.set('next', '/auth/reset-password');
+        redirectUrl.searchParams.set('type', 'recovery'); // Explicitly add type for robust handling
 
         console.log(`Computed redirect URL: ${redirectUrl.toString()}`);
 
