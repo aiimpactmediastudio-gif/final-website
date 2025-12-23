@@ -1,5 +1,6 @@
 import { Hero } from "@/components/hero"
 import { ContentRow } from "@/components/content-row"
+import { TokenCatcher } from "@/components/auth/token-catcher"
 
 export default function Home() {
   const trendingNow = [
@@ -20,6 +21,7 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen flex-col bg-black pb-20 overflow-x-hidden">
+      <TokenCatcher />
       {/* Hero Section */}
       <Hero />
 
