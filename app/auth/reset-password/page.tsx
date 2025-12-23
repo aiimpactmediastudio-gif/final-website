@@ -1,107 +1,111 @@
-"use client";
+"use client"
 
-import { useEffect, useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Lock, Loader2 } from "lucide-react"
 
+// Force dynamic rendering to handle search params
 export const dynamic = 'force-dynamic';
 
 function ResetPasswordForm() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const code = searchParams.get("code") || searchParams.get("token");
-    const email = searchParams.get("email");
-    const supabase = createClient();
+    const router = useRouter()
+    const searchParams = useSearchParams()
+    // Check for both legacy 'token' and typical 'code' params
+    const token = searchParams.get('token') || searchParams.get('code')
 
-    const [sessionChecked, setSessionChecked] = useState(false);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [formError, setFormError] = useState<string | null>(null);
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState(false)
 
-    // Exchange the recovery code for a session
-    useEffect(() => {
-        if (code) {
-            supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
-                if (error) {
-                    console.error("Code exchange error:", error);
-                    router.replace("/auth/auth-code-error");
-                } else {
-                    setSessionChecked(true);
-                }
-            });
-        } else {
-            // No code – treat as invalid
-            setSessionChecked(true);
-        }
-    }, [code, supabase, router]);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setError(null)
 
-    // Verify that a session exists after exchange
-    useEffect(() => {
-        if (sessionChecked) {
-            supabase.auth.getSession().then(({ data: { session } }) => {
-                if (!session) {
-                    setErrorMsg(
-                        "Your reset link is invalid or has expired. Please request a new password reset."
-                    );
-                }
-            });
-        }
-    }, [sessionChecked, supabase]);
+        if (!token) {
+            // If no token in URL, check if we have an active session
+            // (Scenario: Middleware/Callback already exchanged code for session)
+            const supabase = createClient()
+            const { data: { session } } = await supabase.auth.getSession()
 
-    const handleUpdate = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (password !== confirmPassword) {
-            setFormError("Passwords do not match");
-            return;
-        }
-        setIsLoading(true);
-        setFormError(null);
-        const { error, data } = await supabase.auth.updateUser({ password });
-        if (error) {
-            setFormError(error.message);
-        } else {
-            // Revoke all other sessions for this user
-            const user = data?.user ?? null;
-            if (user?.id) {
-                try {
-                    await fetch('/api/revoke-sessions', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId: user.id }),
-                    });
-                } catch (e) {
-                    console.error('Failed to revoke sessions', e);
-                }
+            if (!session) {
+                setError('Invalid request. No reset token found and no active session.')
+                return
             }
-            // Show success toast
-            import('react-hot-toast').then(({ toast }) => {
-                toast.success('Password updated – you can now log in');
-            });
-            router.push('/auth/login?checkEmail=true');
         }
-        setIsLoading(false);
-    };
 
-    if (errorMsg) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-screen p-4">
-                <p className="text-red-500 mb-4">{errorMsg}</p>
-                <Link href="/auth/forgot-password" className="text-blue-500 underline">
-                    Forgot Password?
-                </Link>
-            </div>
-        );
+        if (password !== confirmPassword) {
+            setError('Passwords do not match')
+            return
+        }
+
+        if (password.length < 6) {
+            setError('Password must be at least 6 characters')
+            return
+        }
+
+        setLoading(true)
+
+        try {
+            const supabase = createClient()
+
+            // If we have a token (PKCE flow usually exchanges code first, but older links might have token)
+            // Actually, for Supabase PKCE:
+            // 1. User clicks link -> /auth/callback?code=...
+            // 2. Callback exchanges code -> sets session -> redirects to /reset-password
+            // 3. THIS page loads. Token might NOT be in URL if redirected purely by cookie.
+            // So we should try plain updateUser first (relying on session).
+
+            let updateError;
+
+            // First try updating user assuming we have a session (preferred Modern method)
+            const { error: sessionError } = await supabase.auth.updateUser({
+                password: password
+            })
+
+            updateError = sessionError;
+
+            // If that fails and we have a token (Legacy/Direct handling), try exchanging it?
+            // Note: exchangeCodeForSession is usually done in callback.
+            // But let's handle the specific case where maybe we are passed a raw token hash (unlikely in PKCE)
+            // We'll stick to updateUser.
+
+            if (updateError) {
+                // If error says "Auth session missing!" and we have a code...
+                // The callback should have handled this.
+                // But if we are here and failing, show the message.
+                setError(updateError.message)
+                return
+            }
+
+            setSuccess(true)
+
+            // Redirect after 3 seconds
+            setTimeout(() => {
+                router.push('/auth/login')
+            }, 3000)
+
+        } catch (err: any) {
+            setError(err.message || 'An error occurred')
+        } finally {
+            setLoading(false)
+        }
     }
 
-    if (!sessionChecked) {
-        return <p className="text-center py-8">Loading...</p>;
+    if (success) {
+        return (
+            <div className="flex min-h-screen flex-col items-center justify-center p-4">
+                <div className="w-full max-w-md bg-green-500/10 border border-green-500/20 p-8 rounded-lg text-center">
+                    <h2 className="text-xl font-bold text-green-500 mb-2">Password Updated!</h2>
+                    <p>Redirecting to login...</p>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -113,10 +117,22 @@ function ResetPasswordForm() {
                     </div>
                     <h2 className="text-2xl font-bold">Set new password</h2>
                     <p className="text-sm text-muted-foreground">
-                        Please enter your new password below.
+                        Enter your new password below.
                     </p>
                 </div>
-                <form onSubmit={handleUpdate} className="space-y-4">
+
+                {/* Debug - Helpful for User to see if system recognizes their state */}
+                {/* <div className="bg-muted p-2 rounded text-xs mb-4 text-center font-mono">
+                Code/Token Present: {token ? 'YES' : 'NO (Relying on Session)'}
+            </div> */}
+
+                {error && (
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded mb-4 text-sm">
+                        {error}
+                    </div>
+                )}
+
+                <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid gap-1">
                         <Label htmlFor="password">New Password</Label>
                         <Input
@@ -125,8 +141,8 @@ function ResetPasswordForm() {
                             placeholder="New Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            disabled={isLoading}
                             required
+                            disabled={loading}
                         />
                     </div>
                     <div className="grid gap-1">
@@ -137,26 +153,28 @@ function ResetPasswordForm() {
                             placeholder="Confirm New Password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            disabled={isLoading}
                             required
+                            disabled={loading}
                         />
                     </div>
-                    {formError && (
-                        <p className="text-red-500 text-sm">{formError}</p>
-                    )}
-                    <Button type="submit" disabled={isLoading} className="w-full">
-                        {isLoading ? "Updating..." : "Update Password"}
+
+                    <Button type="submit" disabled={loading} className="w-full">
+                        {loading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Resetting...
+                            </>
+                        ) : 'Reset Password'}
                     </Button>
                 </form>
             </div>
         </div>
-    );
+    )
 }
 
 export default function ResetPasswordPage() {
     return (
-        <Suspense fallback={<p className="text-center py-8">Loading...</p>}>
+        <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
             <ResetPasswordForm />
         </Suspense>
-    );
+    )
 }
