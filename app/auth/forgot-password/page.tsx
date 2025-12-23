@@ -21,18 +21,22 @@ export default function ForgotPasswordPage() {
         if (cooldown) return
         setIsLoading(true)
         setError(null)
-        const supabase = createClient()
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${location.origin}/auth/callback?next=/auth/reset-password`,
-        })
 
-        if (error) {
-            setError(error.message)
+        // Use Server Action to bypass Supabase SMTP limitations
+        // We import it dynamically to avoid server-action-in-client issues depending on how nextjs is configured, 
+        // but typically importing from top is fine. Let's stick to import at top.
+        // Actually, let's keep it simple.
+
+        const { requestPasswordReset } = await import("@/app/actions/auth")
+        const result = await requestPasswordReset(email)
+
+        if (!result.success) {
+            setError(result.error || "Failed to send reset email")
             setIsLoading(false)
         } else {
             setSuccess(true)
             setIsLoading(false)
-            setCooldown(60) // 60‑second cooldown
+            setCooldown(60)
         }
     }
 
