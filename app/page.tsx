@@ -1,4 +1,4 @@
-import { Hero } from "@/components/hero"
+import { Hero } from "@/components/Hero"
 import { ContentRow } from "@/components/content-row"
 
 export default function Home() {
@@ -19,9 +19,15 @@ export default function Home() {
   ]
 
   return (
-    <main className="flex min-h-screen flex-col bg-zinc-900 pb-20">
+    <main className="relative min-h-screen flex-col bg-black pb-20 overflow-x-hidden">
+      {/* Hero Section */}
       <Hero />
-      <div className="-mt-32 relative z-30 space-y-8 pl-4 lg:pl-0">
+
+      {/* Main Content Area - Overlapping with Hero */}
+      <div className="relative z-30 -mt-32 space-y-12 pl-4 lg:pl-0 bg-transparent">
+        {/* Gradient Mask to smooth transition */}
+        <div className="absolute top-[-100px] inset-x-0 h-32 bg-gradient-to-b from-transparent to-black pointer-events-none" />
+
         <ContentRow title="Trending Now" items={trendingNow} />
         <ContentRow title="New Submissions" items={newSubmit} />
         <ContentRow title="AI Recommended for You" items={[...newSubmit, ...trendingNow].sort(() => 0.5 - Math.random())} />
