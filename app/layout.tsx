@@ -1,3 +1,4 @@
+// Force redeploy: 2025-12-22T20:01:55
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
