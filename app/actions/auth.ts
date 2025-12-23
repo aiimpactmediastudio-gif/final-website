@@ -25,12 +25,19 @@ export async function requestPasswordReset(email: string) {
         )
 
         // 3. Generate Recovery Link
-        // Support Vercel deployments automatically by checking NEXT_PUBLIC_VERCEL_URL or VERCEL_URL
-        // The process.env.VERCEL_URL is automatically set by Vercel but doesn't include https://
-        let siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+        // Priority:
+        // 1. configuration.NEXT_PUBLIC_SITE_URL (Your custom domain: https://impactaistudio.com)
+        // 2. process.env.VERCEL_URL (Automatic Vercel URL: https://app.vercel.app)
+        // 3. Localhost (Development)
 
-        if (process.env.VERCEL_URL) {
+        let siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+        if (!siteUrl && process.env.VERCEL_URL) {
             siteUrl = `https://${process.env.VERCEL_URL}`;
+        }
+
+        if (!siteUrl) {
+            siteUrl = 'http://localhost:3000';
         }
 
         console.log(`Generating reset link for site: ${siteUrl}`); // Debug log
