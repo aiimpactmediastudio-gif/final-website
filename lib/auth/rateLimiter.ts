@@ -5,6 +5,18 @@ const cache = new LRUCache<string, { count: number; reset: number }>({
     ttl: 60_000 // 1 minute
 });
 
+export class RateLimitError extends Error {
+    status: number;
+    retryAfter: number;
+
+    constructor(message: string, retryAfter: number) {
+        super(message);
+        this.name = 'RateLimitError';
+        this.status = 429;
+        this.retryAfter = retryAfter;
+    }
+}
+
 export const checkRate = (ip: string, limit = Number(process.env.AUTH_RATE_LIMIT || 60)) => {
     const now = Date.now();
     const entry = cache.get(ip) ?? { count: 0, reset: now + 60_000 };
@@ -20,11 +32,6 @@ export const checkRate = (ip: string, limit = Number(process.env.AUTH_RATE_LIMIT
 
     if (entry.count > limit) {
         const retryAfter = Math.ceil((entry.reset - now) / 1000);
-        const err = new Error('Too many requests');
-        // @ts-ignore – we attach HTTP‑specific data for the API layer
-        err.status = 429;
-        // @ts-ignore
-        err.retryAfter = retryAfter;
-        throw err;
+        throw new RateLimitError('Too many requests', retryAfter);
     }
 };

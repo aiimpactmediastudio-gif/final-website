@@ -44,6 +44,16 @@ export async function POST(req: Request) {
             }, { status: 401 });
         }
 
+        // Check MFA requirement
+        const mfaSecret = (user.user_metadata as any)?.mfa_secret;
+        if (mfaSecret) {
+            return NextResponse.json({
+                mfaRequired: true,
+                message: 'MFA verification required',
+                userId: user.id
+            }, { status: 200 });
+        }
+
         // 4️⃣ Create our own refresh session (revocable)
         const refreshId = crypto.randomUUID();
         const refreshToken = signRefreshToken({ sessionId: refreshId, userId: user.id });

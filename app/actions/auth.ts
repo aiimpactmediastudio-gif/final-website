@@ -45,7 +45,7 @@ export async function requestPasswordReset(email: string) {
 
         // For password recovery we redirect to the SIGNUP page with a query param
         const redirectUrl = `${siteUrl}/auth/signup?view=reset`;
-        console.log(`Recovery redirect URL: ${redirectUrl}`);
+
 
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({
             type: "recovery",

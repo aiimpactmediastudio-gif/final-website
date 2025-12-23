@@ -16,7 +16,7 @@ export function TokenCatcher() {
         const token = urlParams.get("token") || urlParams.get("code")
 
         if (token) {
-            console.log("Found auth token on landing page, executing emergency redirect...")
+
             // Preserve all query parameters (token, error, etc.)
             const queryString = window.location.search
             router.replace(`/reset-password${queryString}`)
